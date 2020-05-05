@@ -1,0 +1,36 @@
+.outer-container{
+    width: 100%;
+    background: black;
+    height: 100vh;
+}
+.container{
+    width:500px;
+    background-color:aliceblue;
+    padding: 30px;
+    margin:auto;
+    height:450px;
+    
+}
+.message-box{
+    height:330px;
+    overflow-y: overlay;
+}
+button{
+    background-color: #4F2470;
+    color: white;
+}
+h1{
+    text-align: center;
+}
+li{
+    list-style: none;
+    color: black;
+}
+.time{
+    color: black;
+    font-weight: bold;
+    margin-right:10px;
+}
+input[name=inputMsg]{
+    width:60%;
+}
