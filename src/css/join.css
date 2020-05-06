@@ -1,0 +1,17 @@
+.outer-container{
+    width:100%;
+    background:black;
+}
+.inner-container{
+    width:200px;
+    margin: auto;
+    background: aliceblue;
+    padding:20px;
+}
+.textHeading{
+    color:black;
+    font-weight: bold;
+}
+input{
+    width:100%
+}

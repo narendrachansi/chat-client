@@ -2,6 +2,8 @@ import React from 'react'
 import socketIOClient from 'socket.io-client'
 import Message from '../components/message'
 import generateMessage from '../utils/message'
+import queryString from 'query-string'
+
 class Chat extends React.Component{
     constructor(props){
         super(props)
@@ -10,7 +12,9 @@ class Chat extends React.Component{
             messages:[],
             disableBtn:false,
             disableLocBtn:false,
-            location:''
+            location:'',
+            users:[],
+            room:''
         }
         this.msgHandler = this.msgHandler.bind(this);
         this.submitForm = this.submitForm.bind(this);
@@ -19,6 +23,7 @@ class Chat extends React.Component{
         this.ENDPOINT="localhost:3001"
         this.socket = socketIOClient(this.ENDPOINT);
         this.messagesEndRef = React.createRef()
+        this.parsed = queryString.parse(window.location.search);
     }
     scrollToBottom(){
         this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
@@ -51,35 +56,57 @@ class Chat extends React.Component{
     }
 
     componentDidMount(){
-        this.socket.on("message", (data) => {
-            //console.log(data)
+        this.socket.on("message", (data,username) => {
             this.setState({
-                messages: [...this.state.messages, generateMessage(data)]
+                messages: [...this.state.messages, generateMessage(data,username)]
             })
             this.scrollToBottom()
         });
-        this.socket.on("locationMsg", (loc) => {
+        this.socket.on("locationMsg", (loc,username) => {
             this.setState({
-                messages: [...this.state.messages, generateMessage(loc)]
+                messages: [...this.state.messages, generateMessage(loc,username)]
             })
             this.scrollToBottom()
         });
+        this.socket.on("userData", (users,room) => {
+            this.setState({
+                users: users,
+                room: room
+            })
+            this.scrollToBottom()
+        });
+        this.socket.emit('join',this.parsed,(error)=>{
+            if(error){
+                alert(error)
+                window.href="/join"
+            }
+        })
     }
     render(){
         return(
             <div className='outer-container'>
                 <div className='container'>
-                    <h1>Chat App</h1>
-                    <div className='message-box'>
-                        <Message messages={this.state.messages}/>
-                        <div ref={this.messagesEndRef} />
-                    </div>              
-                    <form name='message-form' onSubmit={this.submitForm}>
-                        <input type='text' name='inputMsg' placeholder="Message" value={this.state.inputMsg} onChange={this.msgHandler} />
-                        <button id='submitMsg' disabled={this.state.disableBtn}>Submit</button>
-                        <button id='send-location' onClick={this.sendLocation} disabled={this.state.disableLocBtn}>Send Location</button>
-                    </form>
-                    
+                    <div className='left-container'>
+                        <h2>{this.state.room}</h2>
+                        <h3>Users</h3>
+                        <ul>
+                            {this.state.users.map(user=>(
+                                 <li>{user.username}</li>
+                            ))}                           
+                        </ul>
+                    </div>
+                    <div className='right-container'>
+                        <h1>Chat App</h1>
+                        <div className='message-box'>
+                            <Message messages={this.state.messages}/>
+                            <div ref={this.messagesEndRef} />
+                        </div>              
+                        <form name='message-form' onSubmit={this.submitForm}>
+                            <input type='text' name='inputMsg' placeholder="Message" value={this.state.inputMsg} onChange={this.msgHandler} required autoComplete='off'/>
+                            <button id='submitMsg' disabled={this.state.disableBtn}>Submit</button>
+                            <button id='send-location' onClick={this.sendLocation} disabled={this.state.disableLocBtn}>Send Location</button>
+                        </form>
+                    </div>                    
                 </div>
             </div>
         )

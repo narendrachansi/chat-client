@@ -11,9 +11,27 @@
     height:450px;
     
 }
+.left-container{
+    width: 20%;
+    height: 450px;
+    float: left;
+    background: black;
+    color: white;
+    padding: 10px;
+    margin-right: 10px;
+    margin-left: -17px;
+}
+.left-container li{
+    list-style: none;
+    color: aliceblue;
+}
+.right-container{
+    width: 80%;
+    height: 450px;
+}
 .message-box{
     height:330px;
-    overflow-y: overlay;
+    overflow: auto;
 }
 button{
     background-color: #4F2470;
